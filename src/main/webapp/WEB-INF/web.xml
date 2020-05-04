@@ -14,10 +14,10 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
     <!--Need to support HTML pages-->
-    <servlet-mapping>
+<!--    <servlet-mapping>
         <servlet-name>jsp</servlet-name>
         <url-pattern>*.html</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>    -->
     <!--Need to support HTML pages-->    
     <session-config>
         <session-timeout>999999999</session-timeout>

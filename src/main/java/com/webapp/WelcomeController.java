@@ -1,4 +1,4 @@
-package com.in28minutes.springboot.tutorial.basics.application.configuration;
+package com.webapp;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
