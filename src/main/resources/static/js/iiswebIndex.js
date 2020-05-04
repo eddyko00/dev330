@@ -21,9 +21,16 @@ var app = {
 
         $(document).keypress(function (event) {
             var keycode = (event.keyCode ? event.keyCode : event.which);
-            if (keycode === '13') {
+            if (keycode == '13') {
                 var txemail = document.getElementById("txt-email").value;
                 var txtpassword = document.getElementById("txt-password").value;
+                
+            if (txemail === "") {
+                if (txtpassword === "") {
+                    txemail = "GUEST";
+                    txtpassword = "guest";
+                }
+            }                
                 $.ajax({
                     url: iisurl + "cust/login?email=" + txemail + "&pass=" + txtpassword,
                     crossDomain: true,
@@ -46,7 +53,7 @@ var app = {
 //                var iisWebObj = JSON.parse(iisWebObjStr);
 //                console.log(iisWebObj);
 
-                    if (custObj !== null) {
+                    if (custObj != null) {
                         window.location.href = "account_1.html";
                     } else {
 //                    $('#error_message').fadeIn().html(jsonStr);
@@ -83,7 +90,7 @@ var app = {
                 var webMsg = result.webMsg;
                 console.log(webMsg);
                 var resultID = webMsg.resultID;
-                if (resultID === 1) {
+                if (resultID == 1) {
                     $("#txt-email").val(txtemailaddress);
                     // Set the input field with unique ID #name
                     $("#txt-password").val(txtpassword);
@@ -135,7 +142,7 @@ var app = {
 //                var iisWebObj = JSON.parse(iisWebObjStr);
 //                console.log(iisWebObj);
 
-                if (custObj !== null) {
+                if (custObj != null) {
                     window.location.href = "account_1.html";
                 } else {
 //                    $('#error_message').fadeIn().html(jsonStr);
