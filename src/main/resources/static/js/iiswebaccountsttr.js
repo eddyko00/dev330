@@ -153,9 +153,9 @@ var app = {
             htmlName += '<div class="ui-block-b" style="width:20%">:' + signal + '</div>';
             var total = trObj.balance + sharebalance;
             total = total - trObj.investment;
-            var totalSt = Number(total).toLocaleString('en');
+            var totalSt = Number(total).toLocaleString('en-US', {style:'currency', currency:'USD'});
 //            var totalSt = total.toFixed(2);
-            htmlName += '<div class="ui-block-c">Profit: $' + totalSt + '</div>';
+            htmlName += '<div class="ui-block-c">Profit: ' + totalSt + '</div>';
             htmlName += '</div>';
 
 //            var trStr = '  L:' + trObj.longamount + ' LS:' + trObj.longshare + ' S:' + trObj.shortamount + ' SS:' + trObj.shortshare
@@ -183,9 +183,12 @@ var app = {
             htmlBtn += '</div>';
 
             htmlName += htmlBtn;
-            if (trObj.trname === "TR_NN2") {
+            if (trObj.trname === "TR_NN1") {
+                htmlName += 'Auto Trading Signal using AI Model';
+            } else if (trObj.trname === "TR_NN2") {
                 htmlName += 'Auto Trading Signal using AI Model';
             } else if (trObj.trname === "TR_ACC") {
+
                 var link = trObj.linktradingruleid;
                 var trObjlink = null;
                 for (j = 0; j < trObjList.length; j++) {
@@ -389,15 +392,15 @@ var app = {
                                     var shareAmount = PerfObj.performData.share * PerfObj.performData.close;
                                     balance += shareAmount;
                                 }
-                                var balanceSt = Number(balance).toLocaleString('en');
-                                var netprofitSt = Number(PerfObj.netprofit).toLocaleString('en');
+                                var balanceSt = Number(balance).toLocaleString('en-US', {style:'currency', currency:'USD'});
+                                var netprofitSt = Number(PerfObj.netprofit).toLocaleString('en-US', {style:'currency', currency:'USD'});
 
                                 var percent = 100 * (PerfObj.netprofit / PerfObj.investment);
                                 var percentSt = Number(percent.toFixed(2)).toLocaleString('en');
 
                                 var htmlName = "";
                                 htmlName += '<div class="ui-grid-a">';
-                                htmlName += '<div class="ui-block-a" ><strong>' + 'Netprofit: $' + netprofitSt + '</strong></div>';
+                                htmlName += '<div class="ui-block-a" ><strong>' + 'Netprofit: ' + netprofitSt + '</strong></div>';
                                 htmlName += '<div class="ui-block-b" >Profit(%): ' + percentSt + '%</div>';
                                 htmlName += '</div>';
                                 htmlName += '<br>';
@@ -408,10 +411,10 @@ var app = {
                                 htmlName += '<div class="ui-grid-a">';
                                 htmlName += '<br>';
                                 htmlName += '<div class="ui-grid-a">';
-                                var investmentSt = Number(PerfObj.investment).toLocaleString('en');
-                                htmlName += '<div class="ui-block-a" >' + 'Balance: $' + balanceSt + '</div>';
-                                var netprofitSt = Number(PerfObj.netprofit).toLocaleString('en');
-                                htmlName += '<div class="ui-block-b" >' + 'Invest: $' + investmentSt + '</div>';
+                                var investmentSt = Number(PerfObj.investment).toLocaleString('en-US', {style:'currency', currency:'USD'});
+                                htmlName += '<div class="ui-block-a" >' + 'Balance: ' + balanceSt + '</div>';
+                                var netprofitSt = Number(PerfObj.netprofit).toLocaleString('en-US', {style:'currency', currency:'USD'});
+                                htmlName += '<div class="ui-block-b" >' + 'Invest: ' + investmentSt + '</div>';
                                 htmlName += '</div>';
 
                                 htmlName += '<div class="ui-grid-a">';
