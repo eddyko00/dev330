@@ -414,7 +414,7 @@ var app = {
                                 var investmentSt = Number(PerfObj.investment).toLocaleString('en-US', {style:'currency', currency:'USD'});
                                 htmlName += '<div class="ui-block-a" >' + 'Balance: ' + balanceSt + '</div>';
                                 var netprofitSt = Number(PerfObj.netprofit).toLocaleString('en-US', {style:'currency', currency:'USD'});
-                                htmlName += '<div class="ui-block-b" >' + 'Invest: ' + investmentSt + '</div>';
+                                htmlName += '<div class="ui-block-b" >' + 'Max Inv: ' + investmentSt + '</div>';
                                 htmlName += '</div>';
 
                                 htmlName += '<div class="ui-grid-a">';
@@ -527,6 +527,8 @@ var app = {
                 trName = "TR_ACC";
             } else if (trNum == 2) {
                 trName = "TR_MACD";
+            } else if (trNum == 4) {
+                trName = "TR_NN1";                
             } else if (trNum == 5) {
                 trName = "TR_NN2";
             }
