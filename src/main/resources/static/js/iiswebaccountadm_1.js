@@ -9,14 +9,14 @@ var app = {
         });
 
 //        var iisurl = "https://iiswebsrv.herokuapp.com/";
-        var iisMsgSession = "iisMsgSession";
         var iisWebSession = "iisWebSession";
 //        var custObj = 'custObj';
 //        var accList = 'accList';
-        
+
         var iisWebObjStr = window.localStorage.getItem(iisWebSession);
         var iisWebObj = JSON.parse(iisWebObjStr);
 //        console.log(iisWebObj);
+        
         var iisurlStr = iisWebObj.iisurlStr;
         iisurl = iisurlStr;
 
@@ -25,14 +25,13 @@ var app = {
             window.location.href = "index.html";
         }
         var custObj = JSON.parse(custObjStr);
+
         var accObjListStr = iisWebObj.accObjListStr;
         var accObjList = JSON.parse(accObjListStr);
-        var accId = iisWebObj.accId;
-
         var accObj = null;
         for (i = 0; i < accObjList.length; i++) {
             var accObjTmp = accObjList[i];
-            if (accObjTmp.id == accId) {
+            if (accObjTmp.type == 140) { //INT_ADMIN_ACCOUNT = 140;
                 accObj = accObjTmp;
                 break;
             }
@@ -40,50 +39,32 @@ var app = {
         if (accObj == null) {
             window.location.href = "index.html";
         }
-
-        var stockObjListStr = iisWebObj.stockObjListStr;
-        var stockObjList = JSON.parse(stockObjListStr);
-        var sockId = iisWebObj.sockId;
-        console.log(sockId);
-
-        var stockObj = null;
-        for (i = 0; i < stockObjList.length; i++) {
-            var stockObjTmp = stockObjList[i];
-            if (stockObjTmp.id == sockId) {
-                stockObj = stockObjTmp;
-                break;
-            }
-        }
-        if (stockObj == null) {
-            window.location.href = "index.html";
-        }
-
+        
+        var CustNListStr = iisWebObj.CustNListStr;
+        var CustNListCnt = iisWebObj.CustNListCnt;
+        
         $.ajax({
-            url: iisurl + "/cust/" + custObj.username + "/acc/" + accId + "/st/" + sockId + "/tr",
+            url: iisurl + "/cust/" + custObj.username + "/acc/" + accObj.id + "/comm",
             crossDomain: true,
             cache: false,
             beforeSend: function () {
                 $("#loader").show();
             },
 
-            error: function () {
-                window.location.href = "index.html";
-            },
-
-            success: function (resultTRList) {
-                console.log(resultTRList);
-
-                window.localStorage.setItem(iisMsgSession, "");
-
-                var trObjListStr = JSON.stringify(resultTRList, null, '\t');
-                var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr,
-                    'accId': accId, 'stockObjListStr': stockObjListStr, 'sockId': sockId, 'trObjListStr': trObjListStr};
+            success: function (resultCommObjList) {
+                console.log(resultCommObjList);
+                var commObjListStr = "";
+                
+                if (resultCommObjList !== "") {
+                    commObjListStr = JSON.stringify(resultCommObjList, null, '\t');
+                }
+                
+                var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr, 'commObjListStr': commObjListStr,
+                    'CustNListStr': CustNListStr, 'CustNListCnt': CustNListCnt};
                 window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
-
-                window.location.href = "accountsttr.html";
+                window.location.href = "accountadm.html";
             }
         });
-
     }
 };
 app.initialize();

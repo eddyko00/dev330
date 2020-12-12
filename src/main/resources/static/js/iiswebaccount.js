@@ -16,8 +16,11 @@ var app = {
 
         var iisWebObjStr = window.localStorage.getItem(iisWebSession);
         var iisWebObj = JSON.parse(iisWebObjStr);
-        console.log(iisWebObj);
+//        console.log(iisWebObj);
 
+        var iisurlStr = iisWebObj.iisurlStr;
+        iisurl = iisurlStr;
+        
         var custObjStr = iisWebObj.custObjStr;
         if (custObjStr == null) {
             window.location.href = "index.html";
@@ -27,6 +30,14 @@ var app = {
         var accObjList = JSON.parse(accObjListStr);
 
         var commObjListStr = iisWebObj.commObjListStr;
+
+        var iisMsgSession = "iisMsgSession";
+        var msgObjStr = window.localStorage.getItem(iisMsgSession);
+//        msgObjStr ="This feature does not allow for GUEST account";
+        if (msgObjStr !== "") {
+            functionAlertConfirm(msgObjStr, function ok() {
+            });
+        }
 
         if (commObjListStr !== "") {
             var commObjList = JSON.parse(commObjListStr);
@@ -62,7 +73,6 @@ var app = {
         if (custObj.type == 99) {
             var htmlAdmin = '<br><br><button id="sysbtn" >System Status</button>';
             htmlAdmin += '<button id="admsgbtn"  >Admin Msg</button>';
-
             $("#adminid").append(htmlAdmin);
         }
 
@@ -119,7 +129,7 @@ var app = {
                 return;
             }
 
-            var iisWebObj = {'custObjStr': custObjStr, 'accObjListStr': accObjListStr, 'accId': accId};
+            var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr, 'accId': accId};
             window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
             window.location.href = "accountst_1.html";
         });
@@ -154,7 +164,7 @@ var app = {
 
 
         $("#sysbtn").click(function () {
-            var iisWebObj = {'custObjStr': custObjStr, 'accObjListStr': accObjListStr};
+            var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr};
             window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
             window.location.href = "accountstatus_1.html";
             return;
@@ -174,51 +184,57 @@ var app = {
             if (accObj == null) {
                 window.location.href = "#page-index";
             }
-            $.ajax({
-                url: iisurl + "/cust/" + custObj.username + "/acc/" + accObj.id + "/comm",
-
-                crossDomain: true,
-                cache: false,
-                success: function (resultCommAdmObjList) {
-                    console.log(resultCommAdmObjList);
-                    if (resultCommAdmObjList !== "") {
-                        ;
-                    } else {
-                        window.location.href = "#page-index";
-                        return;
-                    }
-                    var commAdmObjListStr = JSON.stringify(resultCommAdmObjList, null, '\t');
-                    console.log(commAdmObjListStr);
-                    if (commAdmObjListStr !== "") {
-                        var commAdmObjList = JSON.parse(commAdmObjListStr);
-
-                        var htmlhead = '<div class="ui-grid-b">';
-                        htmlhead += '<div class="ui-block-a" style="width:30%"><strong>Date</strong></div>';
-                        htmlhead += '<div class="ui-block-b" style="width:5%"></div>';
-                        htmlhead += '<div class="ui-block-c">Msg</div>';
-                        htmlhead += '</div>';
-
-                        $("#admmsgid").html('<li id="0" >' + htmlhead + '</li>');
-
-                        for (i = 0; i < commAdmObjList.length; i++) {
-                            var commObj = commAdmObjList[i];
-                            var commId = commObj.id;
-
-                            var htmlName = '<div class="ui-grid-b">';
-                            htmlName += '<div class="ui-block-a" style="width:30%"><strong>' + commObj.updatedatedisplay + '</strong></div>';
-                            htmlName += '<div class="ui-block-b" style="width:5%"> </div>';
-                            htmlName += '<div class="ui-block-c">id:' + commId + " " + commObj.data + '</div>';
-                            htmlName += '</div>';
-
-                            $("#admmsgid").append('<li id="' + commId + '" >' + htmlName + '</li>');
-
-                        }
-                        window.location.href = "#page-admmsg";
-                        return;
-                    }
-
-                }
-            });
+            var CustNListStr = "";
+            var CustNListCnt = 0;
+            var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr,
+                'CustNListStr': CustNListStr, 'CustNListCnt': CustNListCnt};
+            window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
+            window.location.href = "accountadm_1.html";
+//            $.ajax({
+//                url: iisurl + "/cust/" + custObj.username + "/acc/" + accObj.id + "/comm",
+//
+//                crossDomain: true,
+//                cache: false,
+//                success: function (resultCommAdmObjList) {
+//                    console.log(resultCommAdmObjList);
+//                    if (resultCommAdmObjList !== "") {
+//                        ;
+//                    } else {
+//                        window.location.href = "#page-index";
+//                        return;
+//                    }
+//                    var commAdmObjListStr = JSON.stringify(resultCommAdmObjList, null, '\t');
+//                    console.log(commAdmObjListStr);
+//                    if (commAdmObjListStr !== "") {
+//                        var commAdmObjList = JSON.parse(commAdmObjListStr);
+//
+//                        var htmlhead = '<div class="ui-grid-b">';
+//                        htmlhead += '<div class="ui-block-a" style="width:30%"><strong>Date</strong></div>';
+//                        htmlhead += '<div class="ui-block-b" style="width:5%"></div>';
+//                        htmlhead += '<div class="ui-block-c">Msg</div>';
+//                        htmlhead += '</div>';
+//
+//                        $("#admmsgid").html('<li id="0" >' + htmlhead + '</li>');
+//
+//                        for (i = 0; i < commAdmObjList.length; i++) {
+//                            var commObj = commAdmObjList[i];
+//                            var commId = commObj.id;
+//
+//                            var htmlName = '<div class="ui-grid-b">';
+//                            htmlName += '<div class="ui-block-a" style="width:30%"><strong>' + commObj.updatedatedisplay + '</strong></div>';
+//                            htmlName += '<div class="ui-block-b" style="width:5%"> </div>';
+//                            htmlName += '<div class="ui-block-c">id:' + commId + " " + commObj.data + '</div>';
+//                            htmlName += '</div>';
+//
+//                            $("#admmsgid").append('<li id="' + commId + '" >' + htmlName + '</li>');
+//
+//                        }
+//                        window.location.href = "#page-admmsg";
+//                        return;
+//                    }
+//
+//                }
+//            });
         });
 
         $("#admclrbtn").click(function () {
@@ -250,17 +266,45 @@ var app = {
 
         $("#configbtn").click(function () {
             if (custObj.username.toUpperCase() === "GUEST") {
-                alert("Not supproted feature for GUEST accont");
-                return;
-            }
-        });
-        $("#invoicebtn").click(function () {
-            if (custObj.username.toUpperCase() === "GUEST") {
-                alert("Not supproted feature for GUEST accont");
-                return;
+                msgObjStr = "This feature does not allow for GUEST account";
+                window.localStorage.setItem(iisMsgSession, msgObjStr);
+                window.location.href = "account.html";
             }
         });
 
+        $("#invoicebtn").click(function () {
+            if (custObj.username.toUpperCase() === "GUEST") {
+                msgObjStr = "This feature does not allow for GUEST account";
+                window.localStorage.setItem(iisMsgSession, msgObjStr);
+                window.location.href = "account.html";
+            }
+        });
+
+        function functionConfirm(msg, myYes, myNo, myOk) {
+            var confirmBox = $("#confirm");
+            confirmBox.find(".message").text(msg);
+            confirmBox.find(".yes,.no,.ok").unbind().click(function () {
+                confirmBox.hide();
+                window.localStorage.setItem(iisMsgSession, "");
+            });
+            confirmBox.find(".yes").click(myYes);
+            confirmBox.find(".no").click(myNo);
+            confirmBox.find(".ok").click(myOk);
+            confirmBox.show();
+        }
+
+        function functionAlertConfirm(msg, myYes, myNo, myOk) {
+            var confirmBox = $("#alertconfirm");
+            confirmBox.find(".message").text(msg);
+            confirmBox.find(".yes,.no,.ok").unbind().click(function () {
+                confirmBox.hide();
+                window.localStorage.setItem(iisMsgSession, "");
+            });
+            confirmBox.find(".yes").click(myYes);
+            confirmBox.find(".no").click(myNo);
+            confirmBox.find(".ok").click(myOk);
+            confirmBox.show();
+        }
 
 // example        
 //alert("AJAX request successfully completed");

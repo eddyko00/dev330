@@ -14,10 +14,12 @@ var app = {
 
 
 //        var iisurl = "https://iiswebsrv.herokuapp.com/";
+        var iisMsgSession = "iisMsgSession";
         var iisWebSession = "iisWebSession";
 //        var custObj = 'custObj';
 //        var accList = 'accList';
 
+        var iisurlStr = iisurl;
 
         $(document).keypress(function (event) {
             var keycode = (event.keyCode ? event.keyCode : event.which);
@@ -31,6 +33,17 @@ var app = {
                         txtpassword = "guest";
                     }
                 }
+                if (txemail === "00") {
+                    txemail = "admin1";
+                    txtpassword = "Passw0rd";
+                    iisurlStr = iisurl_LOCAL;
+                }
+                if (txemail === "1111") {
+                    txemail = "admin1";
+                    txtpassword = "Passw0rd";
+                    iisurlStr = iisurl_OP;
+                }
+
                 if (txemail === "11") {
                     txemail = "admin1";
                     txtpassword = "Passw0rd";
@@ -62,16 +75,14 @@ var app = {
                     console.log(custObj);
 
                     var custObjStr = JSON.stringify(custObj, null, '\t');
-                    var iisWebObj = {'custObjStr': custObjStr};
+                    var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr};
                     window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
 
-//                var iisWebObjStr = window.localStorage.getItem('iisWebSession');
-//                var iisWebObj = JSON.parse(iisWebObjStr);
-//                console.log(iisWebObj);
 
                     if (custObj != null) {
                         window.location.href = "account_1.html";
                     } else {
+
 //                    $('#error_message').fadeIn().html(jsonStr);
                         $('#error_message').fadeIn().html('Incorrect email/password. Please try again.');
                     }
@@ -135,6 +146,17 @@ var app = {
                     txtpassword = "guest";
                 }
             }
+            if (txemail === "00") {
+                txemail = "admin1";
+                txtpassword = "Passw0rd";
+                iisurlStr = iisurl_LOCAL;
+            }
+            if (txemail === "1111") {
+                txemail = "admin1";
+                txtpassword = "Passw0rd";
+                iisurlStr = iisurl_OP;
+            }
+
             if (txemail === "11") {
                 txemail = "admin1";
                 txtpassword = "Passw0rd";
@@ -166,19 +188,25 @@ var app = {
                 console.log(custObj);
 
                 var custObjStr = JSON.stringify(custObj, null, '\t');
-                var iisWebObj = {'custObjStr': custObjStr};
+                var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr};
                 window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
 
-//                var iisWebObjStr = window.localStorage.getItem('iisWebSession');
-//                var iisWebObj = JSON.parse(iisWebObjStr);
-//                console.log(iisWebObj);
-
-                if (custObj != null) {
-                    window.location.href = "account_1.html";
-                } else {
-//                    $('#error_message').fadeIn().html(jsonStr);
-                    $('#error_message').fadeIn().html("Incorrect email/password. Please try again.");
+                var webMsg = result.webMsg;
+                if (webMsg.resultID == 0) {
+                    if (custObj != null) {
+                        window.location.href = "account_1.html";
+                        return;
+                    }
                 }
+                var reMsg = "Incorrect email/password. Please try again.";
+                if (webMsg.resultID == 2) {
+                    reMsg = "Account in processing. Please try again later. ";
+                }
+                if (webMsg.resultID == 1) {
+                    reMsg = "Account is disabled. ";
+                }                
+                $('#error_message').fadeIn().html(reMsg);
+
             }
         });
 

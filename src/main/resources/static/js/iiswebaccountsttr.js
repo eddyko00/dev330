@@ -16,7 +16,9 @@ var app = {
 
         var iisWebObjStr = window.localStorage.getItem(iisWebSession);
         var iisWebObj = JSON.parse(iisWebObjStr);
-        console.log(iisWebObj);
+//        console.log(iisWebObj);
+        var iisurlStr = iisWebObj.iisurlStr;
+        iisurl = iisurlStr;
 
         var custObjStr = iisWebObj.custObjStr;
         if (custObjStr == null) {
@@ -37,6 +39,14 @@ var app = {
         }
         if (accObj == null) {
             window.location.href = "index.html";
+        }
+
+        var iisMsgSession = "iisMsgSession";
+        var msgObjStr = window.localStorage.getItem(iisMsgSession);
+//        msgObjStr ="This feature does not allow for GUEST account";
+        if (msgObjStr !== "") {
+            functionAlertConfirm(msgObjStr, function ok() {
+            });
         }
 
         var stockObjListStr = iisWebObj.stockObjListStr;
@@ -71,17 +81,18 @@ var app = {
         var stStr = 'Trading Model Listing<br>';
         var stStatus = "";
         if (stockObj.substatus == 12) { //ConstantKey.STOCK_SPLIT STOCK_DETLA = 12
-            stStatus = "St: L Detla";
+            stStatus = "<font style= color:red>St: PriceDif>20%</font>";
         }
         if (stockObj.substatus == 10) { //ConstantKey.STOCK_SPLIT STOCK_SPLIT = 10
-            stStatus = "St: Split";
+            stStatus = "<font style= color:red>St: Split</font>";
         }
         if (stockObj.substatus == 2) { //INITIAL = 2;
             stStatus = "St: Init";
         }
         if (stockObj.substatus == 0) { //INITIAL = 2;
-            stStatus = "St: Ready";
+            stStatus = "<font style= color:green>St: Ready</font>";
         }
+
         stStr += stockObj.stockname + '<br>' + stockObj.updateDateD + " " + stStatus + '<br>' +
                 'Pre Cl:' + preClose + '  Close:' + close + '  Per:' + percentSt
         $("#0").html('<h1>' + stStr + '</h1>');
@@ -94,9 +105,8 @@ var app = {
             console.log(trObj);
             var nameId = trObj.id;
             if (custObj.username.toUpperCase() === "GUEST") {
-                if (trObj.trname === "TR_MV") {
-                    ;
-                } else if (trObj.trname === "TR_MACD") {
+
+                if (trObj.trname === "TR_MACD") {
                     ;
                 } else if (trObj.trname === "TR_NN1") {
                     ;
@@ -108,15 +118,11 @@ var app = {
                     continue;
                 }
             } else {
-                if (trObj.trname === "TR_MV") {
-                    ;
-                } else if (trObj.trname === "TR_MACD") {
+                if (trObj.trname === "TR_MACD") {
                     ;
                 } else if (trObj.trname === "TR_NN1") {
                     ;
                 } else if (trObj.trname === "TR_NN2") {
-                    ;
-                } else if (trObj.trname === "TR_NN3") {
                     ;
                 } else if (trObj.trname === "TR_ACC") {
                     trObjacc = trObj;
@@ -160,44 +166,27 @@ var app = {
 
             var total = trObj.balance + sharebalance;
             total = total - trObj.investment;
-            var totalSt = Number(total).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
-//            var totalSt = total.toFixed(2);
+            var totalSt = Number(total.toFixed(0)).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+            totalSt = totalSt.replace(".00", "");
             htmlName += '<div class="ui-block-c">Profit: ' + totalSt + '</div>';
             htmlName += '</div>';
 
-//            var trStr = '  L:' + trObj.longamount + ' LS:' + trObj.longshare + ' S:' + trObj.shortamount + ' SS:' + trObj.shortshare
-//            htmlName += '<h3>' + trStr + '</h3>';
-
-            var htmlBtn = '<div id="myidbtn"  data-role="controlgroup" data-type="horizontal" data-theme="a" style="font-size:0.7em; margin-left:auto; margin-right:auto;width:100%; ">';
-            htmlBtn += '<a href="#" id="' + nameId + '" type="graph"  value="' + trObj.trname + '" data-icon="myicongraph" data-role="button" data-theme="a"></a>';
-            htmlBtn += '<a href="#" id="' + nameId + '" type="table"  value="' + trObj.trname + '" data-icon="myicontable" data-role="button" data-theme="a"></a>';
-            if (trObj.trname === "TR_ACC") {
-                if (trObj.linktradingruleid == 0) {
-                    if (trObj.trsignal == S_BUY) {
-                        htmlBtn += '<a href="#" id="' + nameId + '" type=""  value="' + trObj.trname + '" data-icon="" data-role="button" data-theme="a"></a>';
-                    } else {
-                        htmlBtn += '<a href="#" id="' + nameId + '" type="buy"  value="' + trObj.trname + '" data-icon="myiconbuy" data-role="button" data-theme="a"></a>';
-                    }
-                    if (trObj.trsignal == S_SELL) {
-                        htmlBtn += '<a href="#" id="' + nameId + '" type=""  value="' + trObj.trname + '" data-icon="" data-role="button" data-theme="a"></a>';
-                    } else {
-                        htmlBtn += '<a href="#" id="' + nameId + '" type="sell"  value="' + trObj.trname + '" data-icon="myiconsell" data-role="button" data-theme="a"></a>';
-                    }
-                    htmlBtn += '<a href="#" id="' + nameId + '" type="exit"  value="' + trObj.trname + '" data-icon="myiconexit" data-role="button" data-theme="a"></a>';
-
-                }
-            }
-            htmlBtn += '</div>';
-
-            htmlName += htmlBtn;
             var status = trObj.status;
             if (status == 2) { //int PENDING = 2;
                 htmlName += 'Pending on delete when the signal is exited. <br>'
             }
-            if (trObj.trname === "TR_NN1") {
-                htmlName += 'Auto Trading Signal using AI Model';
+            var comment = "Training in progress ...";
+            if (trObj.comment != "") {
+                if (trObj.comment != "null") {
+                    comment = trObj.comment;
+                }
+            }
+            if (trObj.trname === "TR_MACD") {
+                htmlName += 'Technical Indicator for MACD';
+            } else if (trObj.trname === "TR_NN1") {
+                htmlName += 'Auto AI Model : ' + comment;
             } else if (trObj.trname === "TR_NN2") {
-                htmlName += 'Auto Trading Signal using AI Model';
+                htmlName += 'Auto AI Model (Beta) : ' + comment;
             } else if (trObj.trname === "TR_ACC") {
 
                 var link = trObj.linktradingruleid;
@@ -217,6 +206,34 @@ var app = {
                     }
                 }
             }
+
+
+//            var htmlBtn = '<div id="myidbtn"  data-role="controlgroup" data-type="horizontal" data-theme="a" style="font-size:0.2em; margin-left:auto; margin-right:auto;width:100%; ">';
+            var htmlBtn = '<div id="myidbtn" data-role="footer" data-theme="b" >';
+            htmlBtn += '<a href="#" id="' + nameId + '" type="graph"  value="' + trObj.trname + '" data-icon="myicongraph" data-role="button" data-theme="a">Chart</a>';
+            htmlBtn += '<a href="#" id="' + nameId + '" type="table"  value="' + trObj.trname + '" data-icon="myicontable" data-role="button" data-theme="a">Perf</a>';
+            if (trObj.trname === "TR_ACC") {
+                if (trObj.linktradingruleid == 0) {
+                    if (trObj.trsignal === S_BUY) {
+                        htmlBtn += '<a href="#" id="' + nameId + '" type="sell"  value="' + trObj.trname + '" data-icon="myiconsell" data-role="button" data-theme="a">Sell</a>';
+                        htmlBtn += '<a href="#" id="' + nameId + '" type="exit"  value="' + trObj.trname + '" data-icon="myiconexit" data-role="button" data-theme="a">Exit</a>';
+                    }
+                    if (trObj.trsignal === S_SELL) {
+                        htmlBtn += '<a href="#" id="' + nameId + '" type="buy"  value="' + trObj.trname + '" data-icon="myiconbuy" data-role="button" data-theme="a">Buy</a>';
+                        htmlBtn += '<a href="#" id="' + nameId + '" type="exit"  value="' + trObj.trname + '" data-icon="myiconexit" data-role="button" data-theme="a">Exit</a>';
+                    }
+                    if (trObj.trsignal !== S_BUY) {
+                        if (trObj.trsignal !== S_SELL) {
+                            htmlBtn += '<a href="#" id="' + nameId + '" type="buy"  value="' + trObj.trname + '" data-icon="myiconbuy" data-role="button" data-theme="a">Buy</a>';
+                            htmlBtn += '<a href="#" id="' + nameId + '" type="sell"  value="' + trObj.trname + '" data-icon="myiconsell" data-role="button" data-theme="a">Sell</a>';
+                        }
+                    }
+                }
+            }
+            htmlBtn += '</div>';
+
+            htmlName += htmlBtn;
+
 
             $("#myid").append('<li id="' + nameId + '"><a href="#">' + htmlName + '</a></li>');
 
@@ -521,7 +538,7 @@ var app = {
                 return;
             }
             var trName = trObj.trname;
-            var iisWebObj = {'custObjStr': custObjStr, 'accObjListStr': accObjListStr,
+            var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr,
                 'accId': accId, 'stockObjListStr': stockObjListStr, 'sockId': sockId,
                 'trObjListStr': trObjListStr, 'trName': trName};
 
@@ -531,9 +548,13 @@ var app = {
 
         $("#configbtn").click(function () {
             if (custObj.username.toUpperCase() === "GUEST") {
-                alert("Not supproted feature for GUEST accont");
+                msgObjStr = "This feature does not allow for GUEST account";
+                window.localStorage.setItem(iisMsgSession, msgObjStr);
                 window.location.href = "accountsttr.html";
-                return;
+
+//                alert("Not supproted feature for GUEST accont");
+//                window.location.href = "accountsttr.html";
+//                return;
             }
             var trNum = trObjacc.linktradingruleid;
             var trName = "TR_NN2";
@@ -570,14 +591,15 @@ var app = {
 
             var tr = $('#myidtrmodel').val();
             console.log(tr);
-//"/cust/{username}/acc/{accountid}/st/{stockid or symbol}/tr/{trname}/linktr/{linkopt or trname}"
-            var answer = confirm('Do you want to save changes?');
-            if (answer) {
-                ;
-            } else {
-                window.location.href = "#page_index";
-                return;
-            }
+//            var answer = confirm('Do you want to save changes?');
+//            if (answer) {
+//                ;
+//            } else {
+//                window.location.href = "#page_index";
+//                return;
+//            }
+
+            //"/cust/{username}/acc/{accountid}/st/{stockid or symbol}/tr/{trname}/linktr/{linkopt or trname}"
             $.ajax({
                 url: iisurl + "/cust/" + custObj.username + "/acc/" + accId + "/st/" + sockId + "/tr/TR_ACC/linktr/" + tr,
                 crossDomain: true,
@@ -596,6 +618,34 @@ var app = {
                 window.location.href = "accountsttr_1.html";
             }
         });
+
+
+        function functionConfirm(msg, myYes, myNo, myOk) {
+            var confirmBox = $("#confirm");
+            confirmBox.find(".message").text(msg);
+            confirmBox.find(".yes,.no,.ok").unbind().click(function () {
+                confirmBox.hide();
+                window.localStorage.setItem(iisMsgSession, "");
+            });
+            confirmBox.find(".yes").click(myYes);
+            confirmBox.find(".no").click(myNo);
+            confirmBox.find(".ok").click(myOk);
+            confirmBox.show();
+        }
+
+        function functionAlertConfirm(msg, myYes, myNo, myOk) {
+            var confirmBox = $("#alertconfirm");
+            confirmBox.find(".message").text(msg);
+            confirmBox.find(".yes,.no,.ok").unbind().click(function () {
+                confirmBox.hide();
+                window.localStorage.setItem(iisMsgSession, "");
+            });
+            confirmBox.find(".yes").click(myYes);
+            confirmBox.find(".no").click(myNo);
+            confirmBox.find(".ok").click(myOk);
+            confirmBox.show();
+        }
+
 // example        
 //alert("AJAX request successfully completed");
 //var jsonObj = JSON.parse(jsonStr);

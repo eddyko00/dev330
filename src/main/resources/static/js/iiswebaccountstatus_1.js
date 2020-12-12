@@ -15,8 +15,10 @@ var app = {
 
         var iisWebObjStr = window.localStorage.getItem(iisWebSession);
         var iisWebObj = JSON.parse(iisWebObjStr);
-        console.log(iisWebObj);
-
+//        console.log(iisWebObj);
+        var iisurlStr = iisWebObj.iisurlStr;
+        iisurl = iisurlStr;
+        
         var custObjStr = iisWebObj.custObjStr;
         if (custObjStr == null) {
             window.location.href = "index.html";
@@ -27,7 +29,7 @@ var app = {
 
 
         $.ajax({
-            url: iisurl + "cust/" + custObj.username + "/sys/lock",
+            url: iisurl + "cust/" + custObj.username + "/uisys/"+custObj.id+"/lock",
 
             crossDomain: true,
             cache: false,
@@ -51,11 +53,11 @@ var app = {
                     cache: false,
                     success: function (serverList) {
                         var serverListStr = JSON.stringify(serverList, null, '\t');
-                        var iisWebObj = {'custObjStr': custObjStr, 'accObjListStr': accObjListStr,
+                        var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr,
                             'lockObjListStr': lockObjListStr, 'serverListStr': serverListStr};
                         window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
                         $.ajax({
-                            url: iisurl + "timerhandler?resttimerMsg=starttimer",
+                            url: iisurl + "cust/" + custObj.username + "/uisys/"+custObj.id+"/timer",
 
                             crossDomain: true,
                             cache: false,

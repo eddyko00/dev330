@@ -16,8 +16,10 @@ var app = {
 
         var iisWebObjStr = window.localStorage.getItem(iisWebSession);
         var iisWebObj = JSON.parse(iisWebObjStr);
-        console.log(iisWebObj);
-
+//        console.log(iisWebObj);
+        var iisurlStr = iisWebObj.iisurlStr;
+        iisurl = iisurlStr;
+        
         var custObjStr = iisWebObj.custObjStr;
         if (custObjStr == null) {
             window.location.href = "index.html";
@@ -38,6 +40,14 @@ var app = {
             window.location.href = "index.html";
         }
 
+        var iisMsgSession = "iisMsgSession";
+        var msgObjStr = window.localStorage.getItem(iisMsgSession);
+//        msgObjStr ="This feature does not allow for GUEST account";
+        if (msgObjStr !== "") {
+            functionAlertConfirm(msgObjStr, function ok() {
+            });
+        }
+
         var physicalScreenWidth = window.screen.width * window.devicePixelRatio;
         var physicalScreenHeight = window.screen.height * window.devicePixelRatio;
 
@@ -48,10 +58,10 @@ var app = {
 
         var htmlhead = '<div class="ui-grid-d">';
         htmlhead += '<div class="ui-block-a" style="width:20%"><strong>Sym</strong></div>';
-        htmlhead += '<div class="ui-block-b" style="width:20%">Sig</div>';
-        htmlhead += '<div class="ui-block-c" style="width:20%">Trend</div>';
-        htmlhead += '<div class="ui-block-d" style="width:20%">Daily %</div>';
-        htmlhead += '<div class="ui-block-e" style="width:20%">Per %</div>';
+        htmlhead += '<div class="ui-block-b" style="text-align: center;width:20%">Sig</div>';
+        htmlhead += '<div class="ui-block-c" style="text-align: center;width:20%">Trend</div>';
+        htmlhead += '<div class="ui-block-d" style="text-align: center;width:20%">Daily %</div>';
+        htmlhead += '<div class="ui-block-e" style="text-align: center;width:20%">NN1 %</div>';
         htmlhead += '</div>';
         htmlhead += '</div>';
         $("#myid").html('<li id="0" >' + htmlhead + '</li>');
@@ -67,18 +77,18 @@ var app = {
             if (stockObj.trsignal == 1) {
                 signal = "B";
                 htmlName += '<div class="ui-block-a" style="color:green;width:20%"><strong>' + stockObj.symbol + '</strong></div>';
-                htmlName += '<div class="ui-block-b" style="color:green;width:20%">:' + signal + '</div>';
+                htmlName += '<div class="ui-block-b" style="text-align: center;color:green;width:20%">:' + signal + '</div>';
             } else if (stockObj.trsignal == 2) {
                 signal = "S";
                 htmlName += '<div class="ui-block-a" style="color:red;width:20%"><strong>' + stockObj.symbol + '</strong></div>';
-                htmlName += '<div class="ui-block-b" style="color:red;width:20%">:' + signal + '</div>';
+                htmlName += '<div class="ui-block-b" style="text-align: center;color:red;width:20%">:' + signal + '</div>';
             } else {
                 signal = "E";
                 htmlName += '<div class="ui-block-a" style="width:20%"><strong>' + stockObj.symbol + '</strong></div>';
-                htmlName += '<div class="ui-block-b" style="width:20%">:' + signal + '</div>';
+                htmlName += '<div class="ui-block-b" style="text-align: center;width:20%">:' + signal + '</div>';
             }
 
-            htmlName += '<div class="ui-block-c" style="width:20%">T:' + stockObj.longterm + '</div>';
+            htmlName += '<div class="ui-block-c" style="text-align: center;width:20%">T:' + stockObj.longterm + '</div>';
             var percentSt = "";
             var perSt = "";
             var close = 0;
@@ -92,8 +102,8 @@ var app = {
                 perSt = perform.toFixed(0); // + '%';
 
             }
-            htmlName += '<div class="ui-block-d" style="width:20%">P:' + percentSt + ' </div>';
-            htmlName += '<div class="ui-block-e" style="width:20%">:' + perSt + '</div>';
+            htmlName += '<div class="ui-block-d" style="text-align: center;width:20%">P:' + percentSt + ' </div>';
+            htmlName += '<div class="ui-block-e" style="text-align: center;width:20%">:' + perSt + '</div>';
             htmlName += '</div>';
 
             var nameId = stockObj.id;
@@ -128,7 +138,7 @@ var app = {
                 return;
             }
 
-            var iisWebObj = {'custObjStr': custObjStr, 'accObjListStr': accObjListStr,
+            var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr,
                 'accId': accId, 'stockObjListStr': stockObjListStr, 'sockId': sockId};
             window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
             window.location.href = "accountsttr_1.html";
@@ -142,9 +152,13 @@ var app = {
                 return;
             }
             if (custObj.username.toUpperCase() === "GUEST") {
-                alert("Not supproted feature for GUEST accont");
+                msgObjStr = "This feature does not allow for GUEST account";
+                window.localStorage.setItem(iisMsgSession, msgObjStr);
                 window.location.href = "accountst.html";
-                return;
+
+//                alert("Not supproted feature for GUEST accont");
+//                window.location.href = "accountst.html";
+//                return;
             }
 //          ("/cust/{username}/acc/{accountid}/st/add/{symbol}")
             $.ajax({
@@ -162,13 +176,17 @@ var app = {
                     window.location.href = "accountst_1.html";
                     return;
                 }
+                var msgObjStr = "Fail to add stock " + addsymbol;
                 if (result == 2) {
-                    alert("Stock alreday existed");
+                    msgObjStr += " : Stock alreday existed";
+
                 }
                 if (result == 100) {
-                    alert("Max stock exceeded plan configuration");
+                    msgObjStr += " : Max number of stock exceeded the user plan";                    
                 }
-                window.location.href = "accountst_1.html";
+
+                window.localStorage.setItem(iisMsgSession, msgObjStr);
+                window.location.href = "accountst.html";
             }
         });
 
@@ -181,9 +199,12 @@ var app = {
                 return;
             }
             if (custObj.username.toUpperCase() === "GUEST") {
-                alert("Not supproted feature for GUEST accont");
+                msgObjStr = "This feature does not allow for GUEST account";
+                window.localStorage.setItem(iisMsgSession, msgObjStr);
                 window.location.href = "accountst.html";
-                return;
+//                alert("Not supproted feature for GUEST accont");
+//                window.location.href = "accountst.html";
+//                return;
             }
 //          ("/cust/{username}/acc/{accountid}/st/remove/{symbol}")
             $.ajax({
@@ -196,17 +217,35 @@ var app = {
             // add cordova progress indicator https://www.npmjs.com/package/cordova-plugin-progress-indicator
 
             function handleResult(result) {
-                //MAX_ALLOW_STOCK_ERROR = 100 ; NEW = 1; EXISTED = 2
                 console.log(result);
                 if (result == 1) {
                     window.location.href = "accountst_1.html";
                     return;
                 }
-                alert("Cannot remove " + rsymbol);
+                var msgObjStr = "Fail to remove stock " + rsymbol;
+                 //NOTEXISTED = 3;
+                 if (result == 3) {
+                    msgObjStr += " : Stock not found";
+
+                }
+                window.localStorage.setItem(iisMsgSession, msgObjStr);
                 window.location.href = "accountst.html";
             }
 
         });
+
+        function functionAlertConfirm(msg, myYes, myNo, myOk) {
+            var confirmBox = $("#alertconfirm");
+            confirmBox.find(".message").text(msg);
+            confirmBox.find(".yes,.no,.ok").unbind().click(function () {
+                confirmBox.hide();
+                window.localStorage.setItem(iisMsgSession, "");
+            });
+            confirmBox.find(".yes").click(myYes);
+            confirmBox.find(".no").click(myNo);
+            confirmBox.find(".ok").click(myOk);
+            confirmBox.show();
+        }
 
 // example        
 //alert("AJAX request successfully completed");

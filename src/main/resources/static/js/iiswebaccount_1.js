@@ -8,14 +8,16 @@ var app = {
 
         });
 
-//        var iisurl = "https://iiswebsrv.herokuapp.com/";
-        var iisWebSession = "iisWebSession";
-//        var custObj = 'custObj';
-//        var accList = 'accList';
 
+
+//        var iisurl = "https://iiswebsrv.herokuapp.com/";
+        var iisMsgSession = "iisMsgSession";
+        var iisWebSession = "iisWebSession";
         var iisWebObjStr = window.localStorage.getItem(iisWebSession);
         var iisWebObj = JSON.parse(iisWebObjStr);
-        console.log(iisWebObj);
+//        console.log(iisWebObj);
+        var iisurlStr = iisWebObj.iisurlStr;
+        iisurl = iisurlStr;
 
         var custObjStr = iisWebObj.custObjStr;
         if (custObjStr == null) {
@@ -43,7 +45,7 @@ var app = {
                 }
 
                 var accObjListStr = JSON.stringify(resultAccObjList, null, '\t');
-                var iisWebObj = {'custObjStr': custObjStr, 'accObjListStr': accObjListStr};
+                var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr};
                 window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
 
 //                window.location.href = "account.html";
@@ -70,14 +72,17 @@ var app = {
 
                     success: function (resultCommObjList) {
                         console.log(resultCommObjList);
+                        window.localStorage.setItem(iisMsgSession, "");
+
                         if (resultCommObjList !== "") {
                             var commObjListStr = JSON.stringify(resultCommObjList, null, '\t');
-                            var iisWebObj = {'custObjStr': custObjStr, 'accObjListStr': accObjListStr, 'commObjListStr': commObjListStr};
+                            var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr, 'commObjListStr': commObjListStr};
                             window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
+
                             window.location.href = "accountmsg.html";
                         } else {
                             var commObjListStr = "";
-                            var iisWebObj = {'custObjStr': custObjStr, 'accObjListStr': accObjListStr, 'commObjListStr': commObjListStr};
+                            var iisWebObj = {'custObjStr': custObjStr, 'iisurlStr': iisurlStr, 'accObjListStr': accObjListStr, 'commObjListStr': commObjListStr};
                             window.localStorage.setItem(iisWebSession, JSON.stringify(iisWebObj));
                             window.location.href = "account.html";
                         }
